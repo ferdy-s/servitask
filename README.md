@@ -1,6 +1,6 @@
 <img width="2865" height="1651" alt="Screenshot 2025-12-18 105710" src="https://github.com/user-attachments/assets/44cccbfd-f435-4d27-b0c3-4ae5344d3fcf" />
 
-# ServiTask — Task Management System untuk Bisnis Jasa
+# ServiTask - Task Management System untuk Bisnis Jasa
 
 **ServiTask** adalah sistem manajemen kerja berbasis web yang dirancang khusus untuk **bisnis jasa** seperti agency, software house, konsultan, studio kreatif, dan tim profesional lainnya.
 
@@ -161,7 +161,7 @@ ServiTask bertujuan untuk membantu bisnis jasa:
 - Komentar baru
 - In-app notification bell
 
-### 📊 Dashboard
+### Dashboard
 - Role-aware dashboard:
   - Owner/Admin: overview organisasi
   - PM: project & task terkait
@@ -202,7 +202,7 @@ _Full-Stack Developer_
 
 Project ini dibangun dengan pendekatan **clean architecture**, **multi-tenant system**, serta mempertimbangkan **skalabilitas dan kebutuhan enterprise** sejak tahap awal perancangan.
 
-## 📄 Lisensi
+## Lisensi
 
 Lisensi akan ditentukan sesuai kebutuhan bisnis & distribusi.
 
