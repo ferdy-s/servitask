@@ -1,22 +1,29 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { getSession } from "@/lib/auth";
+import { requireSession } from "@/lib/auth";
 
 export async function PATCH(
-  _: Request,
-  { params }: { params: { id: string } }
+  req: Request,
+  context: { params: Promise<{ id: string }> }
 ) {
-  const session = await getSession();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { id } = await context.params;
 
-  await prisma.notification.updateMany({
+  const session = await requireSession();
+
+  const notif = await prisma.notification.findFirst({
     where: {
-      id: params.id,
+      id,
       userId: session.userId,
     },
-    data: { isRead: true },
+  });
+
+  if (!notif) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  await prisma.notification.update({
+    where: { id },
+    data: { readAt: new Date() },
   });
 
   return NextResponse.json({ ok: true });
