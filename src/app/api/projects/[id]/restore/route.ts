@@ -1,16 +1,19 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireSession } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
 
 export async function POST(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
+  // WAJIB: await params
+  const { id } = await context.params;
+
   const session = await requireSession();
   const orgId = session.activeOrgId!;
 
-  // RBAC: OWNER/ADMIN saja untuk restore
+  // RBAC: hanya OWNER / ADMIN
   const membership = await prisma.organizationUser.findFirst({
     where: {
       userId: session.userId,
@@ -26,28 +29,41 @@ export async function POST(
   }
 
   const project = await prisma.project.findFirst({
-    where: { id: params.id, organizationId: orgId },
-    select: { id: true, name: true, deletedAt: true },
+    where: {
+      id,
+      organizationId: orgId,
+    },
+    select: {
+      id: true,
+      name: true,
+      deletedAt: true,
+    },
   });
 
   if (!project || !project.deletedAt) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
+  // Restore project + tasks
   await prisma.$transaction(async (tx) => {
     await tx.project.update({
-      where: { id: params.id },
-      data: { deletedAt: null, deletedById: null },
+      where: { id },
+      data: {
+        deletedAt: null,
+        deletedById: null,
+      },
     });
 
-    // Restore tasks yang ikut soft delete
     await tx.task.updateMany({
       where: {
         organizationId: orgId,
-        projectId: params.id,
+        projectId: id,
         deletedAt: { not: null },
       },
-      data: { deletedAt: null, deletedById: null },
+      data: {
+        deletedAt: null,
+        deletedById: null,
+      },
     });
   });
 

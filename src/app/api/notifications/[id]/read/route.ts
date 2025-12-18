@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireSession } from "@/lib/auth";
 
 export async function PATCH(
-  req: Request,
+  req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
   const { id } = await context.params;
@@ -15,6 +15,7 @@ export async function PATCH(
       id,
       userId: session.userId,
     },
+    select: { id: true },
   });
 
   if (!notif) {
