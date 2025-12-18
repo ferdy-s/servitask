@@ -1,45 +1,212 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<img width="2865" height="1651" alt="Screenshot 2025-12-18 105710" src="https://github.com/user-attachments/assets/44cccbfd-f435-4d27-b0c3-4ae5344d3fcf" />
 
-## Getting Started
+# ServiTask — Task Management System untuk Bisnis Jasa
 
-First, run the development server:
+**ServiTask** adalah sistem manajemen kerja berbasis web yang dirancang khusus untuk **bisnis jasa** seperti agency, software house, konsultan, studio kreatif, dan tim profesional lainnya.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Platform ini membantu mengelola **organisasi, tim, klien, project, task, dan kolaborasi** dalam satu sistem terintegrasi dengan arsitektur modern, aman, dan scalable.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tujuan Produk
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+ServiTask bertujuan untuk membantu bisnis jasa:
 
-## Learn More
+- Mengelola banyak organisasi & klien dalam satu akun
+- Menyusun workflow project dan task secara terstruktur
+- Mendukung kolaborasi tim lintas role
+- Memberikan transparansi progres kepada klien
+- Menjadi fondasi sistem kerja digital jangka panjang
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Scope Produk
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Scope v1
 
-## Deploy on Vercel
+**Core System**
+- Authentication & User Account (register, login, logout, reset password)
+- Multi-Organization & Membership
+- Role & Permission Management
+- Organization Settings
+- Module / Feature Toggle (basic)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Team & Collaboration**
+- Team Management (invite, role, aktif/nonaktif)
+- Comments & Attachments
+- Notifications (in-app sederhana)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Client & Project**
+- Client Management (CRUD)
+- Project Management (CRUD + member)
+- Client Portal (view progres & komentar)
 
-| Role            | Nama            | Email                                                               | Password        |
-| --------------- | --------------- | ------------------------------------------------------------------- | --------------- |
-| SUPER ADMIN     | Bima Pratama    | [bima.superadmin@servitask.id](mailto:bima.superadmin@servitask.id) | **password123** |
-| OWNER           | Andi Saputra    | [andi.owner@servitask.id](mailto:andi.owner@servitask.id)           | **password123** |
-| ADMIN           | Rina Kurniawati | [rina.admin@servitask.id](mailto:rina.admin@servitask.id)           | **password123** |
-| PROJECT MANAGER | Dwi Mahendra    | [dwi.pm@servitask.id](mailto:dwi.pm@servitask.id)                   | **password123** |
-| MEMBER          | Siti Aisyah     | [siti.member@servitask.id](mailto:siti.member@servitask.id)         | **password123** |
-| CLIENT          | Rizky Hidayat   | [rizky.client@servitask.id](mailto:rizky.client@servitask.id)       | **password123** |
+**Task & Productivity**
+- Task Management (Board & List)
+- Subtasks
+- Time Tracking (manual entry)
+- Dashboard (role-aware)
+
+---
+
+## Teknologi & Stack
+
+### Stack Utama
+- **Frontend & Backend**: Next.js (App Router) + TypeScript
+- **Styling**: Tailwind CSS (opsional: shadcn/ui)
+- **Database**: PostgreSQL
+- **ORM**: Prisma
+- **Authentication**:
+  - Custom Auth (JWT + HttpOnly Cookie + Session Table)
+
+---
+
+## Arsitektur Sistem
+
+- API menggunakan **Next.js Route Handlers** (`/app/api`)
+- **Multi-tenant by Organization**
+  - Hampir semua tabel memiliki `organization_id`
+  - Semua query difilter berdasarkan organisasi aktif
+- Layer arsitektur:
+  - UI (React Components)
+  - API Routes (Controller)
+  - Service / Repository (opsional)
+  - Database (PostgreSQL via Prisma)
+
+---
+
+## Role & Permission (v1)
+
+### Role yang Digunakan
+1. Super Admin (Global)
+2. Owner (Pemilik Organisasi)
+3. Admin
+4. Project Manager (PM)
+5. Member / Staff
+6. Client
+
+### Ringkasan Akses (v1)
+
+| Fitur / Aksi | SA | Owner | Admin | PM | Member | Client |
+|-------------|----|-------|-------|----|--------|--------|
+| Kelola organisasi | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Invite & ubah role user | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| CRUD client | ✅ | ✅ | ✅ | Terbatas | Read | Read |
+| CRUD project | ✅ | ✅ | ✅ | Project-nya | ❌ | ❌ |
+| CRUD task | ✅ | ✅ | ✅ | Project-nya | Terbatas | ❌ |
+| Komentar task | ✅ | ✅ | ✅ | ✅ | ✅ | Opsional |
+| Time tracking | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Dashboard | ✅ | ✅ | ✅ | Subset | Subset | Client View |
+
+---
+
+## Domain Model (Entity)
+
+- User
+- Session
+- Organization
+- Role
+- OrganizationUser
+- Client
+- Project
+- ProjectMember
+- Task
+- Subtask
+- TaskComment
+- TaskAttachment
+- TimeEntry
+- Notification
+- Module
+- OrganizationModule
+- (Opsional) Invite, PasswordResetToken
+
+---
+
+## Modul Utama
+
+### Auth & User Account
+- Register → otomatis membuat organisasi & owner
+- Login / Logout
+- Reset password
+- Profile management
+
+### Organization & Team
+- Multi-organization
+- Switch organisasi aktif
+- Team management & role
+
+### Client & Project
+- Client CRUD
+- Project CRUD & member assignment
+- Status project (planned, ongoing, on_hold, completed)
+
+### Task Management
+- Board & List view
+- Status: todo, in_progress, review, done
+- Priority: low, medium, high, urgent
+- Subtasks
+- Comments & attachments
+
+### Time Tracking
+- Manual time entry per task
+- Laporan waktu per user / project / client
+
+### Client Portal
+- Dashboard khusus klien
+- View progres project & task
+- Komentar (opsional)
+
+### Notifications
+- Task assignment
+- Komentar baru
+- In-app notification bell
+
+### 📊 Dashboard
+- Role-aware dashboard:
+  - Owner/Admin: overview organisasi
+  - PM: project & task terkait
+  - Member: task harian & overdue
+  - Client: progres project
+
+---
+
+## Struktur Folder (Next.js App Router)
+
+/app
+/(public)
+/(app)
+/(client)
+/api
+/lib
+/components
+middleware.ts
+
+## Roadmap Development
+
+**Phase 0** — Setup Project & Database  
+**Phase 1** — Auth, Organization, Dashboard  
+**Phase 2** — Team & Client Management  
+**Phase 3** — Projects & Tasks (Core Feature)  
+**Phase 4** — Time Tracking & Reports  
+**Phase 5** — Client Portal  
+**Phase 6** — Notifications & Dashboard Matang  
+
+---
+
+## Author
+
+Project **ServiTask** ini **sepenuhnya dirancang dan dikembangkan oleh**:
+
+**Ferdy Salsabilla**  
+_Full-Stack Developer_
+
+Project ini dibangun dengan pendekatan **clean architecture**, **multi-tenant system**, serta mempertimbangkan **skalabilitas dan kebutuhan enterprise** sejak tahap awal perancangan.
+
+## 📄 Lisensi
+
+Lisensi akan ditentukan sesuai kebutuhan bisnis & distribusi.
+
+---
+
+**ServiTask**  
+_Satu sistem kerja digital untuk mengelola tim, project, dan kolaborasi._
