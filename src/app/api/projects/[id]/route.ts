@@ -1,16 +1,17 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireSession } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
 
 export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   const session = await requireSession();
   const orgId = session.activeOrgId!;
+  const { id } = await context.params;
 
-  // RBAC (OWNER/ADMIN/PM)
+  // RBAC (OWNER / ADMIN / PM)
   const membership = await prisma.organizationUser.findFirst({
     where: {
       userId: session.userId,
@@ -20,22 +21,28 @@ export async function DELETE(
     },
     select: { role: true },
   });
+
   if (!membership) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const project = await prisma.project.findFirst({
-    where: { id: params.id, organizationId: orgId, deletedAt: null },
+    where: {
+      id,
+      organizationId: orgId,
+      deletedAt: null,
+    },
     select: { id: true, name: true },
   });
+
   if (!project) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  // Soft delete project + (opsional) soft delete tasks di project tsb
+  // Soft delete project + tasks
   await prisma.$transaction(async (tx) => {
     await tx.project.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         deletedAt: new Date(),
         deletedById: session.userId,
@@ -43,8 +50,15 @@ export async function DELETE(
     });
 
     await tx.task.updateMany({
-      where: { organizationId: orgId, projectId: params.id, deletedAt: null },
-      data: { deletedAt: new Date(), deletedById: session.userId },
+      where: {
+        organizationId: orgId,
+        projectId: id,
+        deletedAt: null,
+      },
+      data: {
+        deletedAt: new Date(),
+        deletedById: session.userId,
+      },
     });
   });
 

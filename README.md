@@ -25,6 +25,7 @@ ServiTask bertujuan untuk membantu bisnis jasa:
 ### Scope v1
 
 **Core System**
+<<<<<<< HEAD
 - Authentication & User Account (register, login, logout, reset password)
 - Multi-Organization & Membership
 - Role & Permission Management
@@ -42,6 +43,29 @@ ServiTask bertujuan untuk membantu bisnis jasa:
 - Client Portal (view progres & komentar)
 
 **Task & Productivity**
+=======
+
+- Authentication & User Account (register, login, logout, reset password)
+- Multi-Organization & Membership
+- Role & Permission Management
+- Organization Settings
+- Module / Feature Toggle (basic)
+
+**Team & Collaboration**
+
+- Team Management (invite, role, aktif/nonaktif)
+- Comments & Attachments
+- Notifications (in-app sederhana)
+
+**Client & Project**
+
+- Client Management (CRUD)
+- Project Management (CRUD + member)
+- Client Portal (view progres & komentar)
+
+**Task & Productivity**
+
+>>>>>>> 88ecada (Fix route handlers for Next.js 16 params Promise)
 - Task Management (Board & List)
 - Subtasks
 - Time Tracking (manual entry)
@@ -52,6 +76,10 @@ ServiTask bertujuan untuk membantu bisnis jasa:
 ## Teknologi & Stack
 
 ### Stack Utama
+<<<<<<< HEAD
+=======
+
+>>>>>>> 88ecada (Fix route handlers for Next.js 16 params Promise)
 - **Frontend & Backend**: Next.js (App Router) + TypeScript
 - **Styling**: Tailwind CSS (opsional: shadcn/ui)
 - **Database**: PostgreSQL
@@ -78,6 +106,10 @@ ServiTask bertujuan untuk membantu bisnis jasa:
 ## Role & Permission (v1)
 
 ### Role yang Digunakan
+<<<<<<< HEAD
+=======
+
+>>>>>>> 88ecada (Fix route handlers for Next.js 16 params Promise)
 1. Super Admin (Global)
 2. Owner (Pemilik Organisasi)
 3. Admin
@@ -87,6 +119,7 @@ ServiTask bertujuan untuk membantu bisnis jasa:
 
 ### Ringkasan Akses (v1)
 
+<<<<<<< HEAD
 | Fitur / Aksi | SA | Owner | Admin | PM | Member | Client |
 |-------------|----|-------|-------|----|--------|--------|
 | Kelola organisasi | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
@@ -97,6 +130,18 @@ ServiTask bertujuan untuk membantu bisnis jasa:
 | Komentar task | ✅ | ✅ | ✅ | ✅ | ✅ | Opsional |
 | Time tracking | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
 | Dashboard | ✅ | ✅ | ✅ | Subset | Subset | Client View |
+=======
+| Fitur / Aksi            | SA  | Owner | Admin | PM          | Member   | Client      |
+| ----------------------- | --- | ----- | ----- | ----------- | -------- | ----------- |
+| Kelola organisasi       | ✅  | ✅    | ✅    | ❌          | ❌       | ❌          |
+| Invite & ubah role user | ✅  | ✅    | ✅    | ❌          | ❌       | ❌          |
+| CRUD client             | ✅  | ✅    | ✅    | Terbatas    | Read     | Read        |
+| CRUD project            | ✅  | ✅    | ✅    | Project-nya | ❌       | ❌          |
+| CRUD task               | ✅  | ✅    | ✅    | Project-nya | Terbatas | ❌          |
+| Komentar task           | ✅  | ✅    | ✅    | ✅          | ✅       | Opsional    |
+| Time tracking           | ✅  | ✅    | ✅    | ✅          | ✅       | ❌          |
+| Dashboard               | ✅  | ✅    | ✅    | Subset      | Subset   | Client View |
+>>>>>>> 88ecada (Fix route handlers for Next.js 16 params Promise)
 
 ---
 
@@ -125,22 +170,38 @@ ServiTask bertujuan untuk membantu bisnis jasa:
 ## Modul Utama
 
 ### Auth & User Account
+<<<<<<< HEAD
+=======
+
+>>>>>>> 88ecada (Fix route handlers for Next.js 16 params Promise)
 - Register → otomatis membuat organisasi & owner
 - Login / Logout
 - Reset password
 - Profile management
 
 ### Organization & Team
+<<<<<<< HEAD
+=======
+
+>>>>>>> 88ecada (Fix route handlers for Next.js 16 params Promise)
 - Multi-organization
 - Switch organisasi aktif
 - Team management & role
 
 ### Client & Project
+<<<<<<< HEAD
+=======
+
+>>>>>>> 88ecada (Fix route handlers for Next.js 16 params Promise)
 - Client CRUD
 - Project CRUD & member assignment
 - Status project (planned, ongoing, on_hold, completed)
 
 ### Task Management
+<<<<<<< HEAD
+=======
+
+>>>>>>> 88ecada (Fix route handlers for Next.js 16 params Promise)
 - Board & List view
 - Status: todo, in_progress, review, done
 - Priority: low, medium, high, urgent
@@ -148,20 +209,36 @@ ServiTask bertujuan untuk membantu bisnis jasa:
 - Comments & attachments
 
 ### Time Tracking
+<<<<<<< HEAD
+=======
+
+>>>>>>> 88ecada (Fix route handlers for Next.js 16 params Promise)
 - Manual time entry per task
 - Laporan waktu per user / project / client
 
 ### Client Portal
+<<<<<<< HEAD
+=======
+
+>>>>>>> 88ecada (Fix route handlers for Next.js 16 params Promise)
 - Dashboard khusus klien
 - View progres project & task
 - Komentar (opsional)
 
 ### Notifications
+<<<<<<< HEAD
+=======
+
+>>>>>>> 88ecada (Fix route handlers for Next.js 16 params Promise)
 - Task assignment
 - Komentar baru
 - In-app notification bell
 
 ### Dashboard
+<<<<<<< HEAD
+=======
+
+>>>>>>> 88ecada (Fix route handlers for Next.js 16 params Promise)
 - Role-aware dashboard:
   - Owner/Admin: overview organisasi
   - PM: project & task terkait
@@ -189,7 +266,11 @@ middleware.ts
 **Phase 3** — Projects & Tasks (Core Feature)  
 **Phase 4** — Time Tracking & Reports  
 **Phase 5** — Client Portal  
+<<<<<<< HEAD
 **Phase 6** — Notifications & Dashboard Matang  
+=======
+**Phase 6** — Notifications & Dashboard Matang
+>>>>>>> 88ecada (Fix route handlers for Next.js 16 params Promise)
 
 ---
 
