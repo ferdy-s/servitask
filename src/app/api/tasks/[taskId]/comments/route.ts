@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireOrgAccess } from "@/lib/require-org-access";
 import { createNotification } from "@/lib/notifications";
@@ -6,8 +6,8 @@ import { logAudit } from "@/lib/audit";
 import { getRequestMeta } from "@/lib/request-meta";
 
 export async function POST(
-  req: Request,
-  { params }: { params: { taskId: string } }
+  req: NextRequest,
+  context: { params: Promise<{ taskId: string }> }
 ) {
   try {
     // ===============================
@@ -21,6 +21,7 @@ export async function POST(
       "CLIENT",
     ]);
 
+    const { taskId } = await context.params;
     const { ip, userAgent } = getRequestMeta(req);
     const body = await req.json();
 
@@ -34,7 +35,7 @@ export async function POST(
     // OWNERSHIP CHECK
     // ===============================
     const task = await prisma.task.findUnique({
-      where: { id: params.taskId },
+      where: { id: taskId },
       select: {
         id: true,
         title: true,
@@ -72,7 +73,6 @@ export async function POST(
 
     // ===============================
     // 🔔 NOTIFICATION: ASSIGNEE
-    // - dari siapa pun selain assignee
     // ===============================
     if (task.assigneeId && task.assigneeId !== session.userId) {
       await createNotification({
@@ -86,7 +86,6 @@ export async function POST(
 
     // ===============================
     // 🔔 NOTIFICATION: CLIENT
-    // - hanya jika komentar dari TIM
     // ===============================
     if (!isClient && task.project.clientId) {
       const client = await prisma.client.findUnique({
