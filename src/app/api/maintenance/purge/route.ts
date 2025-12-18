@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { cutoffDate } from "@/lib/retention";
 import { logAudit } from "@/lib/audit";
@@ -6,15 +6,15 @@ import { logAudit } from "@/lib/audit";
 // ===============================
 // AUTHORIZATION FOR VERCEL CRON
 // ===============================
-function authorize(req: Request) {
-  const auth = req.headers.get("authorization");
+function authorize(req: NextRequest) {
   const secret = process.env.CRON_SECRET;
+  const token = req.headers.get("x-cron-secret"); // ⬅️ konsisten & simpel
 
   if (!secret) {
     throw new Error("CRON_SECRET not configured");
   }
 
-  if (auth !== `Bearer ${secret}`) {
+  if (token !== secret) {
     throw new Error("Unauthorized");
   }
 }
@@ -22,7 +22,7 @@ function authorize(req: Request) {
 // ===============================
 // CORE PURGE LOGIC
 // ===============================
-async function runPurge(req: Request) {
+async function runPurge(req: NextRequest) {
   authorize(req);
 
   const organizations = await prisma.organization.findMany({
@@ -72,7 +72,9 @@ async function runPurge(req: Request) {
     });
 
     for (const client of clients) {
-      await prisma.client.delete({ where: { id: client.id } });
+      await prisma.client.delete({
+        where: { id: client.id },
+      });
 
       await logAudit({
         organizationId: org.id,
@@ -85,21 +87,27 @@ async function runPurge(req: Request) {
     }
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({
+    ok: true,
+    message: "Retention purge completed",
+  });
 }
 
 // ===============================
-// VERCEL CRON → GET ONLY
+// VERCEL CRON → GET
 // ===============================
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
     return await runPurge(req);
-  } catch {
+  } catch (error) {
+    console.error("[CRON_PURGE]", error);
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 }
 
-// OPTIONAL: MANUAL TEST
-export async function POST(req: Request) {
+// ===============================
+// MANUAL / DEBUG → POST
+// ===============================
+export async function POST(req: NextRequest) {
   return GET(req);
 }
