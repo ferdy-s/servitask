@@ -130,6 +130,7 @@ model Client {
   phone          String?
   company        String?
   notes          String?
+  deletedAt      DateTime?
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   projects     Project[]

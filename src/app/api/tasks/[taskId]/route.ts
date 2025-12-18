@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireOrgAccess } from "@/lib/require-org-access";
 import { createNotification } from "@/lib/notifications";
@@ -6,10 +7,15 @@ import { logAudit } from "@/lib/audit";
 import { getRequestMeta } from "@/lib/request-meta";
 
 export async function PATCH(
-  req: Request,
-  { params }: { params: { taskId: string } }
+  req: NextRequest,
+  context: { params: Promise<{ taskId: string }> }
 ) {
   try {
+    // ===============================
+    // PARAMS (Next.js 16 WAJIB AWAIT)
+    // ===============================
+    const { taskId } = await context.params;
+
     // ===============================
     // AUTH & CONTEXT
     // ===============================
@@ -28,7 +34,7 @@ export async function PATCH(
     // ===============================
     const task = await prisma.task.update({
       where: {
-        id: params.taskId,
+        id: taskId,
         organizationId,
       },
       data: {
@@ -50,11 +56,9 @@ export async function PATCH(
       },
     });
 
-    /**
-     * ===============================
-     * NOTIFICATION: ASSIGNEE (INTERNAL)
-     * ===============================
-     */
+    // ===============================
+    // NOTIFICATION: ASSIGNEE (INTERNAL)
+    // ===============================
     if (body.assigneeId) {
       await createNotification({
         organizationId,
@@ -65,11 +69,9 @@ export async function PATCH(
       });
     }
 
-    /**
-     * ===============================
-     * NOTIFICATION: CLIENT
-     * ===============================
-     */
+    // ===============================
+    // NOTIFICATION: CLIENT
+    // ===============================
     if (task.project?.clientId && body.status) {
       const client = await prisma.client.findUnique({
         where: { id: task.project.clientId },
@@ -96,11 +98,9 @@ export async function PATCH(
       }
     }
 
-    /**
-     * ===============================
-     * AUDIT LOG
-     * ===============================
-     */
+    // ===============================
+    // AUDIT LOG
+    // ===============================
     await logAudit({
       organizationId,
       actorUserId: userId,
